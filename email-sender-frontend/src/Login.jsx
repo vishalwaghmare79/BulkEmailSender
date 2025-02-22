@@ -4,15 +4,18 @@ import { useAuth } from "./context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios"; 
 import { toast } from "react-toastify";
+import Spinner from "./components/Spinner";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { setToken, setUser } = useAuth();
   const navigate = useNavigate(); 
 
   const handleLogin = async () => {
     try {
+      setLoading(true);
       const apiUrl = `${import.meta.env.VITE_API_URL}/api/auth/login`;
       const { data } = await axios.post(apiUrl, {
         email,
@@ -29,13 +32,15 @@ export default function Login() {
       navigate("/dashboard");
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
   
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-teal-400 flex justify-center items-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+     {loading ? (<Spinner />) :  <div className="bg-white p-8 rounded-lg shadow-lg w-96">
         <h2 className="text-3xl font-semibold mb-6 text-center text-gray-800">
           Welcome Back
         </h2>
@@ -81,7 +86,7 @@ export default function Login() {
             Register here
           </Link>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

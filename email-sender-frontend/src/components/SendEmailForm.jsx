@@ -41,7 +41,7 @@ export const SendEmailForm = () => {
       setRecipients('');
       setSubject('');
       setContent('');
-      setFile(null);
+      setFile(null); //
     } catch (error) {
       setLoader(false);
       console.log(error);

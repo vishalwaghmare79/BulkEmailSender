@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { FiArrowLeft, FiTrash } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
+import Spinner from "./Spinner";
 
 const ViewMail = () => {
   const { id } = useParams();
@@ -27,7 +28,7 @@ const ViewMail = () => {
   }, [id]);
 
   if (loading) {
-    return <p className="text-center text-gray-500">Loading email...</p>;
+    return <Spinner />;
   }
 
   if (!email) {
@@ -37,8 +38,8 @@ const ViewMail = () => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto mt-8">
       <div className="flex justify-between items-center mb-4">
-        <Link to="/dashboard" className="text-blue-600 flex items-center gap-2 hover:underline">
-          <FiArrowLeft className="text-lg" /> Back to Dashboard
+        <Link to="/dashboard/allemails" className="text-blue-600 flex items-center gap-2 hover:underline">
+          <FiArrowLeft className="text-lg" /> Back to all emails
         </Link>
         <button className="text-red-500 hover:text-red-600">
           <FiTrash className="text-lg" />

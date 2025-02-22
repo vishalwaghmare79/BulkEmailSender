@@ -6,15 +6,13 @@ require("dotenv").config();
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+
 const sendEmails = async (req, res) => {
   const sender = req.user._id;
-  
   const user = await User.findById(sender);
-
   const userEmail = user.email;
-  
-  const { recipients, subject, content } = req.body;
 
+  const { recipients, subject, content } = req.body;
   if (!recipients || !subject || !content) {
     return res.status(400).json({ message: "Missing required fields" });
   }
@@ -31,7 +29,6 @@ const sendEmails = async (req, res) => {
         type: req.file.mimetype,
         disposition: "attachment",
       });
-
       fs.unlinkSync(req.file.path);
     }
 
@@ -43,16 +40,30 @@ const sendEmails = async (req, res) => {
       attachments,
     }));
 
-    const sendEmailsWithDelay = async (emails) => {
-      for (const email of emails) {
+    const sendEmailsWithRandomDelays = async (emails) => {
+      let remainingEmails = [...emails];
+      let totalDelay = 0;
 
-        await sgMail.sendMultiple(email);
-    
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+      while (remainingEmails.length > 0) {
+        const batchSize = Math.floor(Math.random() * (10 - 3 + 1)) + 3;
+        const batch = remainingEmails.splice(0, batchSize);
+
+        const batchDelay = Math.floor(Math.random() * (5 - 1 + 1)) + 1;
+        totalDelay += batchDelay * 60000; 
+
+        await new Promise((resolve) => setTimeout(resolve, totalDelay));
+
+        for (const email of batch) {
+          const emailDelay = Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000;
+          await new Promise((resolve) => setTimeout(resolve, emailDelay));
+
+          await sgMail.sendMultiple(email);
+          console.log(`Email sent to ${email.to}`);
+        }
       }
     };
-    
-    await sendEmailsWithDelay(emails); 
+
+    await sendEmailsWithRandomDelays(emails);
 
     const savedEmails = await Promise.all(
       recipientList.map(async (recipient) => {
@@ -62,20 +73,20 @@ const sendEmails = async (req, res) => {
           email: recipient.email,
           subject,
           content: text,
-          sender
+          sender,
         });
         return emailEntry.save();
       })
     );
 
-    res
-      .status(200)
-      .json({ message: "Emails sent and stored successfully", savedEmails });
+    res.status(200).json({ message: "Emails sent and stored successfully", savedEmails });
   } catch (error) {
     console.error("Error sending emails:", error);
     res.status(500).json({ message: "Error sending emails", error });
   }
 };
+
+
 
 const getEmails = async (req, res) => {
   const sender = req.user._id;

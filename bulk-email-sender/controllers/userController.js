@@ -1,5 +1,6 @@
 const { hashPassword, comparePassword, sendOTPEmail, generateOTP } = require("../helpers/userHelpers.js");
 const JWT = require("jsonwebtoken");
+
 const { User } = require("../models/user.model.js");
 
 const registerController = async (req, res) => {
@@ -55,15 +56,14 @@ const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-     if (!email || !password) {
+    if (!email || !password) {
       return res.status(400).send({
         success: false,
-        message: "Invalid email or password", 
+        message: "Invalid email or password",
       });
     }
 
-    const user = await User.findOne({ email });
-    
+    const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(404).send({
         success: false,
@@ -71,9 +71,8 @@ const loginController = async (req, res) => {
       });
     }
 
-    const match = await comparePassword(password, user.password);
-    
-    if (!match) {
+    const isMatch = await comparePassword(password, user.password);
+    if (!isMatch) {
       return res.status(401).send({
         success: false,
         message: "Invalid password.",
@@ -88,11 +87,11 @@ const loginController = async (req, res) => {
       success: true,
       message: "Login successful.",
       user: {
-        id: user._id, 
+        id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
       },
-      token, 
+      token,
     });
   } catch (error) {
     console.error("Error logging in user:", error);

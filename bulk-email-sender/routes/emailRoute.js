@@ -9,7 +9,7 @@ const upload = multer({ dest: 'uploads/' });
 router.post('/send-emails', requireSignIn, upload.single('file'), sendEmails);
 router.get('/emails', requireSignIn, getEmails);
 router.get('/email/:id', requireSignIn, getEmailById);
-router.delete("/email/:id", deleteEmailById);
+router.delete("/email/:id",requireSignIn, deleteEmailById);
 
 const emailRoutes = router;
 module.exports = emailRoutes;
