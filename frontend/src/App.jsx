@@ -19,7 +19,7 @@ function App() {
 
         <Route path="/" element={<ProtectedLayout />}>
           <Route path="dashboard" element={<Dashboard />}>
-            <Route index element={<UserProfile />} />
+            <Route index element={<SendEmailForm />} />
             <Route path="profile" element={<UserProfile />} />
             <Route path="send" element={<SendEmailForm />} />
             <Route path="allemails" element={<AllEmails />} />
