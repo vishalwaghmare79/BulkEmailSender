@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoute');
 const connectDB = require('./config/db');
 const emailRoutes = require('./routes/emailRoute');
-const { processQueue } = require('./helpers/emailQueue');
+const { processQueue } = require('./helpers/emailQueuenode');
 require('dotenv').config();
 
 connectDB();
