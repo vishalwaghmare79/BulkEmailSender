@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { Email } = require('../models/email.model');
 const { User } = require('../models/user.model');
-const { addToQueue } = require('../helpers/emailQueue');
+const { addToQueue } = require('../helpers/emailQueuenode');
 
 const sendEmails = async (req, res) => {
   const sender = req.user._id;
